@@ -1,0 +1,16 @@
+&i2c1 {
+	mpu6050@68 {
+		compatible = "invensense,mpu6050";
+		reg = <0x68>;
+		label = "MPU6050_sensor";
+		status = "okay";
+		smplrt-div = <249>;
+	};
+
+	bme680@77 {
+		compatible = "bosch,bme680";
+		reg = <0x77>;
+		status = "okay";
+		label = "BME680_sensor";
+	};
+};
