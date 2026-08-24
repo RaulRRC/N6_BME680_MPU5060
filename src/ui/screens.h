@@ -17,15 +17,19 @@ enum ScreensEnum {
 
 typedef struct _objects_t {
     lv_obj_t *main;
-    lv_obj_t *chart_temp;
-    lv_obj_t *chart_humidity;
-    lv_obj_t *chart_pressure;
-    lv_obj_t *ax;
-    lv_obj_t *ay;
-    lv_obj_t *az;
-    lv_obj_t *gx;
-    lv_obj_t *gy;
-    lv_obj_t *gz;
+    lv_obj_t *chart_ax;
+    lv_obj_t *chart_ay;
+    lv_obj_t *chart_az;
+    lv_obj_t *chart_gx;
+    lv_obj_t *chart_gy;
+    lv_obj_t *chart_gz;
+    lv_obj_t *preasure_bar;
+    lv_obj_t *humid_bar;
+    lv_obj_t *humidity_label;
+    lv_obj_t *pressure_label;
+    lv_obj_t *temperature_label;
+    lv_obj_t *temp_gauge;
+    lv_obj_t *indicator_line;
 } objects_t;
 
 extern objects_t objects;

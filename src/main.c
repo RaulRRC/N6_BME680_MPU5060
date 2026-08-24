@@ -2,6 +2,7 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/display.h>
+#include <zephyr/linker/sections.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/sensor.h>
 #include <lvgl.h>
@@ -16,15 +17,22 @@
 #define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #define STACKSIZE 1024
 #define PRIORITY_PRODUCER 5
+
+
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app);
 
 /* Semaphore for signaling between threads */
 K_SEM_DEFINE(data_ready_sem, 0, 1);
 
-static lv_chart_series_t *temp_series;
-static lv_chart_series_t *hum_series;
-static lv_chart_series_t *pres_series;
+static lv_chart_series_t *gx_series;
+static lv_chart_series_t *gy_series;
+static lv_chart_series_t *gz_series;
+
+static lv_chart_series_t *ax_series;
+static lv_chart_series_t *ay_series;
+static lv_chart_series_t *az_series;
+
 
 
 struct BME680_msg {
@@ -47,12 +55,6 @@ struct MPU6050_msg {
 K_MSGQ_DEFINE(sensor_msgq, sizeof(struct BME680_msg), 1, 4);
 K_MSGQ_DEFINE(MPU5060_msg, sizeof(struct MPU6050_msg), 1, 4);
 
-// static int process_mpu6050(const struct device *dev)
-// {
-//
-//
-// 	return rc;
-// }
 
 void BME680_task(void *p1, void *p2, void *p3)
 {
@@ -90,7 +92,7 @@ void BME680_task(void *p1, void *p2, void *p3)
 			   gas_res.val1, gas_res.val2);
 			}
 		}
-		k_sleep(K_MSEC(1000));
+		k_sleep(K_MSEC(2000));
 	}
 }
 
@@ -121,7 +123,6 @@ void MPU6050_task(void *p1, void *p2, void *p3)
 	struct MPU6050_msg  msg = {};
 
 	while (!IS_ENABLED(CONFIG_MPU6050_TRIGGER)) {
-		struct MPU6050_msg Data;
 		struct sensor_value temperature;
 		struct sensor_value accel[3];
 		struct sensor_value gyro[3];
@@ -171,6 +172,7 @@ void MPU6050_task(void *p1, void *p2, void *p3)
 
 K_THREAD_DEFINE(task_a_id, STACKSIZE, BME680_task,
 				NULL, NULL, NULL, PRIORITY_PRODUCER, 0, 0);
+
 K_THREAD_DEFINE(task_b_id, 2048, MPU6050_task,
 				NULL, NULL, NULL, PRIORITY_PRODUCER, 0, 0);
 
@@ -178,6 +180,7 @@ K_THREAD_DEFINE(task_b_id, 2048, MPU6050_task,
 int main(void)
 {
 	const struct device *display_dev;
+	char Preassure[50], Temp[50], Humidity[50];
 
 	display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
 	if (!device_is_ready(display_dev)) {
@@ -196,46 +199,71 @@ int main(void)
 	display_blanking_off(display_dev);
 
 
-	temp_series = lv_chart_add_series(objects.chart_temp, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
-	hum_series  = lv_chart_add_series(objects.chart_humidity, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
-	pres_series = lv_chart_add_series(objects.chart_pressure, lv_palette_main(LV_PALETTE_GREEN), LV_CHART_AXIS_PRIMARY_Y);
+	
+	gx_series = lv_chart_add_series(objects.chart_gx, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
+	gy_series  = lv_chart_add_series(objects.chart_gy, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
+	gz_series = lv_chart_add_series(objects.chart_gz, lv_palette_main(LV_PALETTE_GREEN), LV_CHART_AXIS_PRIMARY_Y);
 
-	lv_chart_set_point_count(objects.chart_temp, 50); // e.g. 50 samples on screen
-	lv_chart_set_point_count(objects.chart_humidity, 50);
-	lv_chart_set_point_count(objects.chart_pressure, 50);
+	ax_series = lv_chart_add_series(objects.chart_ax, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
+	ay_series  = lv_chart_add_series(objects.chart_ay, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
+	az_series = lv_chart_add_series(objects.chart_az, lv_palette_main(LV_PALETTE_GREEN), LV_CHART_AXIS_PRIMARY_Y);
 
-	lv_chart_set_range(objects.chart_temp, LV_CHART_AXIS_PRIMARY_Y, 0, 50);
-	lv_chart_set_range(objects.chart_humidity, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
-	lv_chart_set_range(objects.chart_pressure, LV_CHART_AXIS_PRIMARY_Y, 900, 1100);
 
+	lv_chart_set_point_count(objects.chart_gx, 25); // e.g. 50 samples on screen
+	lv_chart_set_point_count(objects.chart_gy, 25);
+	lv_chart_set_point_count(objects.chart_gz, 25);
+
+	
+	lv_chart_set_point_count(objects.chart_ax, 25); // e.g. 50 samples on screen
+	lv_chart_set_point_count(objects.chart_ay, 25);
+	lv_chart_set_point_count(objects.chart_az, 25);
+
+	lv_chart_set_range(objects.chart_gx, LV_CHART_AXIS_PRIMARY_Y, -1000, 1000);
+	lv_chart_set_range(objects.chart_gx, LV_CHART_AXIS_PRIMARY_Y, -1000, 1000);
+	lv_chart_set_range(objects.chart_gx, LV_CHART_AXIS_PRIMARY_Y, -1000, 1000);
+
+	
+	lv_chart_set_range(objects.chart_ax, LV_CHART_AXIS_PRIMARY_Y, -4, 4);
+	lv_chart_set_range(objects.chart_ay, LV_CHART_AXIS_PRIMARY_Y, -4, 4);
+	lv_chart_set_range(objects.chart_az, LV_CHART_AXIS_PRIMARY_Y, -4, 4);
 
 
 	struct BME680_msg data;
 	struct MPU6050_msg data2;
-	char AX[10],AY[10],AZ[10],GX[10],GY[10],GZ[10];
+	
 
 	while (1) {
 		int ret = k_msgq_get(&sensor_msgq, &data, K_MSEC(50));
 		if(ret == 0){
-			lv_chart_set_next_value(objects.chart_temp, temp_series, (int32_t)data.temperature);
-			lv_chart_set_next_value(objects.chart_humidity, hum_series, (int32_t)data.humidity);
-			lv_chart_set_next_value(objects.chart_pressure, pres_series, (int32_t)data.pressure);
+
+			snprintf(Preassure, sizeof(Preassure), "%f", data.pressure);
+			snprintf(Temp, sizeof(Temp), "%f",data.temperature);
+			snprintf(Humidity, sizeof(Humidity), "%f", data.humidity);
+			
+			lv_label_set_text(objects.humidity_label, Humidity);
+			lv_label_set_text(objects.pressure_label, Preassure);
+			lv_label_set_text(objects.temperature_label, Temp);
+
+
+		
+		
+			lv_slider_set_value(objects.preasure_bar, (int32_t)data.pressure, LV_ANIM_ON);
+			lv_slider_set_value(objects.humid_bar, (int32_t)data.humidity, LV_ANIM_ON);
+			lv_scale_set_line_needle_value(objects.temp_gauge, objects.indicator_line, 42, (int32_t)data.temperature );
+		
 		}
 		int ret2 = k_msgq_get(&MPU5060_msg, &data2, K_MSEC(50));
 		if(ret2 == 0){
-			snprintf(AX, sizeof(data2.AX), "%f", data2.AX);
-			snprintf(AY, sizeof(data2.AY), "%f", data2.AY);
-			snprintf(AZ, sizeof(data2.AZ), "%f", data2.AZ);
-			snprintf(GX, sizeof(data2.GX), "%f", data2.GX);
-			snprintf(GY, sizeof(data2.GY), "%f", data2.GY);
-			snprintf(GZ, sizeof(data2.GZ), "%f", data2.GZ);
+			lv_chart_set_next_value(objects.chart_gx, gx_series, (int32_t)data2.GX);
+			lv_chart_set_next_value(objects.chart_gy, gy_series, (int32_t)data2.GY);
+			lv_chart_set_next_value(objects.chart_gz, gz_series, (int32_t)data2.GZ);
 
-			lv_label_set_text(objects.ax,AX);
-			lv_label_set_text(objects.ay,AY);
-			lv_label_set_text(objects.az,AZ);
-			lv_label_set_text(objects.gx,GX);
-			lv_label_set_text(objects.gy,GY);
-			lv_label_set_text(objects.gz,GZ);
+			lv_chart_set_next_value(objects.chart_ax, ax_series, (int32_t)data2.AX);
+			lv_chart_set_next_value(objects.chart_ay, ay_series, (int32_t)data2.AY);
+			lv_chart_set_next_value(objects.chart_az, az_series, (int32_t)data2.AZ);
+
+
+
 
 		}
 		lv_timer_handler();

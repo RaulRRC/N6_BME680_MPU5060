@@ -30,133 +30,226 @@ void create_screen_main() {
     {
         lv_obj_t *parent_obj = obj;
         {
-            // chart_temp
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 132, 43);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "BME680 Data");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 135, 82);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "Temperature");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 152, 316);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "Humidity");
+        }
+        {
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            lv_obj_set_pos(obj, 152, 384);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "Pressure");
+        }
+        {
+            // chart_ax
             lv_obj_t *obj = lv_chart_create(parent_obj);
-            objects.chart_temp = obj;
-            lv_obj_set_pos(obj, 44, 22);
+            objects.chart_ax = obj;
+            lv_obj_set_pos(obj, 575, 98);
             lv_obj_set_size(obj, 180, 100);
         }
         {
-            // chart_humidity
+            // chart_ay
             lv_obj_t *obj = lv_chart_create(parent_obj);
-            objects.chart_humidity = obj;
-            lv_obj_set_pos(obj, 44, 176);
+            objects.chart_ay = obj;
+            lv_obj_set_pos(obj, 575, 218);
             lv_obj_set_size(obj, 180, 100);
         }
         {
-            // chart_pressure
+            // chart_az
             lv_obj_t *obj = lv_chart_create(parent_obj);
-            objects.chart_pressure = obj;
-            lv_obj_set_pos(obj, 46, 328);
+            objects.chart_az = obj;
+            lv_obj_set_pos(obj, 576, 338);
+            lv_obj_set_size(obj, 180, 100);
+        }
+        {
+            // chart_gx
+            lv_obj_t *obj = lv_chart_create(parent_obj);
+            objects.chart_gx = obj;
+            lv_obj_set_pos(obj, 371, 98);
+            lv_obj_set_size(obj, 180, 100);
+        }
+        {
+            // chart_gy
+            lv_obj_t *obj = lv_chart_create(parent_obj);
+            objects.chart_gy = obj;
+            lv_obj_set_pos(obj, 371, 218);
+            lv_obj_set_size(obj, 180, 100);
+        }
+        {
+            // chart_gz
+            lv_obj_t *obj = lv_chart_create(parent_obj);
+            objects.chart_gz = obj;
+            lv_obj_set_pos(obj, 372, 338);
             lv_obj_set_size(obj, 180, 100);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 295, 22);
+            lv_obj_set_pos(obj, 504, 43);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "GAAAAAAAAAAAAA interface");
+            lv_label_set_text_static(obj, "MPU5060 Data");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 87, 137);
+            lv_obj_set_pos(obj, 423, 74);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Temperatura");
+            lv_label_set_text_static(obj, "Gyroscope");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 99, 291);
+            lv_obj_set_pos(obj, 611, 74);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Humedad");
+            lv_label_set_text_static(obj, "Accelerometer");
+        }
+        {
+            // PREASURE_BAR
+            lv_obj_t *obj = lv_bar_create(parent_obj);
+            objects.preasure_bar = obj;
+            lv_obj_set_pos(obj, 109, 405);
+            lv_obj_set_size(obj, 150, 10);
+            lv_bar_set_range(obj, 0, 1100);
+            lv_bar_set_value(obj, 300, LV_ANIM_ON);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_CLICKABLE|LV_OBJ_FLAG_CLICK_FOCUSABLE);
+            lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0xa921f3), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0x3c1111), LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+        {
+            // HUMID_BAR
+            lv_obj_t *obj = lv_bar_create(parent_obj);
+            objects.humid_bar = obj;
+            lv_obj_set_pos(obj, 107, 338);
+            lv_obj_set_size(obj, 150, 10);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_CLICKABLE|LV_OBJ_FLAG_CLICK_FOCUSABLE);
+            lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+            lv_obj_set_style_bg_color(obj, lv_color_darken(lv_color_hex(0x2130f3), 61), LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(obj, lv_color_hex(0x3f21f3), LV_PART_INDICATOR | LV_STATE_DEFAULT);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 109, 443);
+            lv_obj_set_pos(obj, 272, 332);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Presion");
+            lv_label_set_text_static(obj, "100.0 %");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 295, 106);
+            lv_obj_set_pos(obj, 55, 332);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Aceleracion X:");
+            lv_label_set_text_static(obj, "0.0 %");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 296, 260);
+            lv_obj_set_pos(obj, 45, 400);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Aceleracion Y:");
+            lv_label_set_text_static(obj, "0 hPa");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 295, 412);
+            lv_obj_set_pos(obj, 268, 400);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Aceleracion Z:");
+            lv_label_set_text_static(obj, "1100 hPa");
+        }
+        {
+            // HUMIDITY_LABEL
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.humidity_label = obj;
+            lv_obj_set_pos(obj, 168, 348);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "0.0 %");
+        }
+        {
+            // PRESSURE_LABEL
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.pressure_label = obj;
+            lv_obj_set_pos(obj, 161, 422);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "0 hPa");
+        }
+        {
+            // TEMPERATURE_LABEL
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.temperature_label = obj;
+            lv_obj_set_pos(obj, 164, 260);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            lv_label_set_text_static(obj, "0.0 C");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 503, 106);
+            lv_obj_set_pos(obj, 371, 98);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Gyro X:");
+            lv_label_set_text_static(obj, "GX");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 503, 412);
+            lv_obj_set_pos(obj, 372, 218);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Gyro Z:");
+            lv_label_set_text_static(obj, "GY");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 503, 260);
+            lv_obj_set_pos(obj, 373, 338);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "Gyro Y:");
+            lv_label_set_text_static(obj, "GZ");
         }
         {
-            // AX
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.ax = obj;
-            lv_obj_set_pos(obj, 400, 106);
+            lv_obj_set_pos(obj, 576, 99);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
+            lv_label_set_text_static(obj, "AX");
         }
         {
-            // AY
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.ay = obj;
-            lv_obj_set_pos(obj, 400, 261);
+            lv_obj_set_pos(obj, 576, 219);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
+            lv_label_set_text_static(obj, "AY");
         }
         {
-            // AZ
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.az = obj;
-            lv_obj_set_pos(obj, 400, 413);
+            lv_obj_set_pos(obj, 576, 338);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
+            lv_label_set_text_static(obj, "AZ");
         }
         {
-            // GX
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.gx = obj;
-            lv_obj_set_pos(obj, 561, 107);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
-        }
-        {
-            // GY
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.gy = obj;
-            lv_obj_set_pos(obj, 561, 260);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
-        }
-        {
-            // GZ
-            lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.gz = obj;
-            lv_obj_set_pos(obj, 561, 413);
-            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_label_set_text_static(obj, "0.0");
+            // temp_gauge
+            lv_obj_t *obj = lv_scale_create(parent_obj);
+            objects.temp_gauge = obj;
+            lv_obj_set_pos(obj, 110, 123);
+            lv_obj_set_size(obj, 145, 145);
+            lv_scale_set_mode(obj, LV_SCALE_MODE_ROUND_INNER);
+            lv_scale_set_range(obj, 10, 40);
+            lv_scale_set_angle_range(obj, 270);
+            lv_scale_set_rotation(obj, 135);
+            lv_scale_set_total_tick_count(obj, 31);
+            lv_scale_set_major_tick_every(obj, 5);
+            lv_scale_set_label_show(obj, true);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    // Indicator_line
+                    lv_obj_t *obj = lv_line_create(parent_obj);
+                    objects.indicator_line = obj;
+                    lv_obj_set_style_bg_grad_color(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_bg_image_recolor(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_border_color(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_outline_color(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_shadow_color(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_image_recolor(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_line_color(obj, lv_color_hex(0xff0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_scale_set_line_needle_value(parent_obj, obj, 42, 15);
+                }
+            }
         }
     }
     

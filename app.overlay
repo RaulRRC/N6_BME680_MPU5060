@@ -14,3 +14,7 @@
 		label = "BME680_sensor";
 	};
 };
+
+&axisram3 {
+    status = "okay";
+};
